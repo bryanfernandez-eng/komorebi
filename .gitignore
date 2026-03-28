@@ -57,8 +57,10 @@ coverage/
 .Trashes
 ehthumbs.db
 
-# Build artifacts
+# Build artifact
 *.tsbuildinfo
 .claude/
 .docs/
 *.db    
+
+
