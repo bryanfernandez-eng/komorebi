@@ -61,3 +61,4 @@ ehthumbs.db
 *.tsbuildinfo
 .claude/
 .docs/
+*.db    

@@ -5,3 +5,5 @@ pydantic-settings==2.5.2
 python-dotenv==1.0.1
 google-adk==1.0.0
 google-genai>=1.14.0
+sqlalchemy==2.0.36
+apscheduler==3.10.4
