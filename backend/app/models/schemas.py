@@ -41,3 +41,28 @@ class HistoryResponse(BaseModel):
     """Response for GET /history/{user_id}"""
     user_id: int
     checkins: list[CheckinRecord]
+
+
+# ── Alerts ────────────────────────────────────────────────────────────────────
+
+class AlertRecord(BaseModel):
+    """A single agent-generated alert returned inside the alerts list."""
+    id: int
+    risk_score: Optional[int] = None
+    stress_multiplier: Optional[int] = None
+    final_score: Optional[int] = None
+    action_taken: Optional[str] = None
+    message_en: Optional[str] = None
+    message_es: Optional[str] = None
+    prediction: Optional[str] = None
+    counselor_flagged: bool
+    minimization_detected: bool
+    created_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+class AlertsResponse(BaseModel):
+    """Response for GET /alerts/{user_id}"""
+    user_id: int
+    alerts: list[AlertRecord]
