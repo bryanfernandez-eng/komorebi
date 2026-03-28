@@ -1,0 +1,46 @@
+{
+  "academic_events": [
+    {
+      "event": "Midterm Week",
+      "start": "2026-03-30",
+      "end": "2026-04-04",
+      "stress_weight": 0.8,
+      "description": "Mid-semester examinations across all colleges"
+    },
+    {
+      "event": "Spring Break",
+      "start": "2026-04-07",
+      "end": "2026-04-11",
+      "stress_weight": 0.1,
+      "description": "University-wide spring recess — low stress period"
+    },
+    {
+      "event": "Registration Deadline",
+      "start": "2026-04-15",
+      "end": "2026-04-15",
+      "stress_weight": 0.5,
+      "description": "Fall 2026 course registration closes"
+    },
+    {
+      "event": "Last Day to Withdraw",
+      "start": "2026-04-18",
+      "end": "2026-04-18",
+      "stress_weight": 0.6,
+      "description": "Last day to withdraw from courses without academic penalty"
+    },
+    {
+      "event": "Finals Week",
+      "start": "2026-04-27",
+      "end": "2026-05-02",
+      "stress_weight": 1.0,
+      "description": "End-of-semester final examinations"
+    },
+    {
+      "event": "Commencement",
+      "start": "2026-05-05",
+      "end": "2026-05-05",
+      "stress_weight": 0.2,
+      "description": "Graduation ceremony — positive but emotionally charged"
+    }
+  ]
+}
