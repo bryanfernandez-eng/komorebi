@@ -1,8 +1,7 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import { MoodSlider, SleepSlider, StressSlider } from '../components/Sliders';
-import { submitCheckin } from '../api';
+import { submitCheckin, runAssessment } from '../api';
 
-const DEMO_USER_ID = 1;
 type FormState = 'idle' | 'submitting' | 'success' | 'error';
 
 // Derive a simple vibe from mood vs stress — used only for the window tint
@@ -120,7 +119,12 @@ function WindowPane({ mood, stress }: { mood: number; stress: number }) {
   );
 }
 
-export default function CheckIn() {
+interface CheckInProps {
+  userId: number;
+  userName: string;
+}
+
+export default function CheckIn({ userId, userName }: CheckInProps) {
   const [mood,   setMood]   = useState(5);
   const [sleep,  setSleep]  = useState(5);
   const [stress, setStress] = useState(5);
@@ -135,12 +139,14 @@ export default function CheckIn() {
     setError('');
     try {
       const result = await submitCheckin({
-        user_id: DEMO_USER_ID,
+        user_id: userId,
         mood, sleep, stress,
         text_entry: text.trim() || undefined,
         language: 'en',
       });
       setCheckinId(result.checkin_id);
+      // Trigger ADK pipeline assessment after check-in
+      await runAssessment(userId).catch(() => {});
       setState('success');
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Something went wrong.';
@@ -216,7 +222,7 @@ export default function CheckIn() {
 
                 {/* Header */}
                 <div className="mb-6">
-                  <h1 className="text-[15px] font-semibold text-[#e0e0e0]">How are you doing, Alex?</h1>
+                  <h1 className="text-[15px] font-semibold text-[#e0e0e0]">How are you doing, {userName}?</h1>
                   <p className="text-[13px] text-[#555] mt-0.5">Takes about a minute.</p>
                 </div>
 

@@ -3,8 +3,6 @@ import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianG
 import { TrendingUp, AlertCircle, Sparkles, Activity } from 'lucide-react';
 import { getHistory, getAlerts } from '../api';
 
-const DEMO_USER_ID = 1;
-
 // Define interfaces matching backend schemas
 interface CheckinRecord {
   date: string;
@@ -21,7 +19,11 @@ interface AlertRecord {
   created_at: string;
 }
 
-export default function StudentDashboard() {
+interface StudentDashboardProps {
+  userId: number;
+}
+
+export default function StudentDashboard({ userId }: StudentDashboardProps) {
   const [history, setHistory] = useState<CheckinRecord[]>([]);
   const [alerts, setAlerts] = useState<AlertRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -30,8 +32,8 @@ export default function StudentDashboard() {
     async function fetchData() {
       try {
         const [historyRes, alertsRes] = await Promise.all([
-          getHistory(DEMO_USER_ID),
-          getAlerts(DEMO_USER_ID)
+          getHistory(userId),
+          getAlerts(userId)
         ]);
         
         // Reverse history so oldest is first for the chart, assuming backend returns latest first
