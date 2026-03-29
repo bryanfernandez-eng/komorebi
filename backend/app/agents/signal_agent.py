@@ -22,10 +22,11 @@ from app.models.orm import Checkin
 class RiskReport:
     risk_score: int
     confidence: float
-    trend: str           # "declining" | "stable" | "improving"
+    trend: str                # "declining" | "stable" | "improving"
     reasoning: str
     loops_run: int
     minimization_detected: bool
+    emotion_signals: list[str]  # human-readable tags, e.g. ["distress", "isolation"]
 
 
 def run_signal_agent(db: Session, user_id: int) -> RiskReport:
@@ -52,6 +53,7 @@ def run_signal_agent(db: Session, user_id: int) -> RiskReport:
             reasoning="No check-in data available.",
             loops_run=0,
             minimization_detected=False,
+            emotion_signals=[],
         )
 
     moods    = [r.mood   for r in rows]
@@ -89,7 +91,7 @@ def run_signal_agent(db: Session, user_id: int) -> RiskReport:
     confidence = 0.55
 
     if confidence > 0.85:
-        return _build_report(risk_score, confidence, moods, loops_run, minimization_detected)
+        return _build_report(risk_score, confidence, moods, loops_run, minimization_detected, [])
 
     # ── Loop 2: factor in sleep (recency-weighted) ───────────────────────
     loops_run = 2
@@ -106,7 +108,7 @@ def run_signal_agent(db: Session, user_id: int) -> RiskReport:
     confidence = 0.72
 
     if confidence > 0.85:
-        return _build_report(risk_score, confidence, moods, loops_run, minimization_detected)
+        return _build_report(risk_score, confidence, moods, loops_run, minimization_detected, [])
 
     # ── Loop 3: stress + text (recency-weighted) ────────────────────────
     loops_run = 3
@@ -121,17 +123,93 @@ def run_signal_agent(db: Session, user_id: int) -> RiskReport:
     risk_score += min(stress_rise * 2, 10)
     risk_score = min(risk_score, 95)
 
-    # Text minimisation detection:
-    # If user says "fine" / "okay" / "whatever" but scores are bad → flag
-    minimisation_keywords = {"fine", "okay", "ok", "whatever", "alright", "i'm good", "im good"}
-    if texts and avg_mood <= 5 and avg_stress >= 7:
-        combined_text = " ".join(texts).lower()
-        if any(kw in combined_text for kw in minimisation_keywords):
-            minimization_detected = True
-            risk_score = min(risk_score + 8, 95)
+    # Emotion-aware text analysis
+    text_delta, emotion_signals, minimization_detected = _analyze_text_emotion(
+        texts, avg_mood, avg_stress
+    )
+    risk_score = min(max(risk_score + text_delta, 0), 95)
 
     confidence = 0.89
-    return _build_report(risk_score, confidence, moods, loops_run, minimization_detected)
+    return _build_report(risk_score, confidence, moods, loops_run, minimization_detected, emotion_signals)
+
+
+def _analyze_text_emotion(
+    texts: list[str],
+    avg_mood: float,
+    avg_stress: float,
+) -> tuple[int, list[str], bool]:
+    """
+    Classifies emotional tone across three tiers and returns:
+      - score_delta: int adjustment to apply to risk_score
+      - emotion_signals: list of detected signal tags for reasoning
+      - minimization_detected: bool
+
+    Tiers (applied independently, capped in caller):
+      distress   → +15  (acute crisis language)
+      negative   → +8   (sustained emotional strain)
+      isolation  → +6   (social withdrawal signals)
+      positive   → -5   (genuine wellbeing language)
+      minimization detected when dismissive language contradicts bad scores
+    """
+    if not texts:
+        return 0, [], False
+
+    combined = " ".join(texts).lower()
+    signals: list[str] = []
+    delta = 0
+
+    _DISTRESS = {
+        "can't sleep", "cant sleep", "can't eat", "cant eat",
+        "breaking down", "broken down", "crying", "cried myself",
+        "panic attack", "panicking", "hopeless", "worthless",
+        "giving up", "give up", "can't do this", "cant do this",
+        "falling apart", "want to disappear", "don't see the point",
+    }
+    _NEGATIVE = {
+        "exhausted", "burned out", "burnt out", "overwhelmed",
+        "anxious", "anxiety", "scared", "terrified", "miserable",
+        "depressed", "depression", "numb", "empty", "struggling",
+        "stressed out", "so stressed", "falling behind", "behind on",
+        "can't focus", "cant focus", "can't concentrate",
+    }
+    _ISOLATION = {
+        "lonely", "alone", "no one", "nobody", "isolated",
+        "no friends", "don't belong", "dont belong", "left out",
+        "no one cares", "nobody cares",
+    }
+    _POSITIVE = {
+        "excited", "happy", "great day", "amazing", "motivated",
+        "proud of", "grateful", "doing well", "feeling good",
+        "much better", "things are looking", "really good",
+    }
+    _MINIMIZATION = {
+        "fine", "okay", "ok", "whatever", "alright",
+        "i'm good", "im good", "it's fine", "its fine", "no big deal",
+    }
+
+    if any(kw in combined for kw in _DISTRESS):
+        signals.append("distress")
+        delta += 15
+
+    if any(kw in combined for kw in _NEGATIVE):
+        signals.append("negative_emotion")
+        delta += 8
+
+    if any(kw in combined for kw in _ISOLATION):
+        signals.append("isolation")
+        delta += 6
+
+    if any(kw in combined for kw in _POSITIVE):
+        signals.append("positive_emotion")
+        delta -= 5
+
+    minimization_detected = False
+    if avg_mood <= 5 and avg_stress >= 7 and any(kw in combined for kw in _MINIMIZATION):
+        minimization_detected = True
+        signals.append("minimization")
+        delta += 8
+
+    return delta, signals, minimization_detected
 
 
 def _build_report(
@@ -140,6 +218,7 @@ def _build_report(
     moods: list[int],
     loops_run: int,
     minimization_detected: bool,
+    emotion_signals: list[str],
 ) -> RiskReport:
     if len(moods) >= 2:
         if moods[-1] < moods[0] - 1:
@@ -158,6 +237,8 @@ def _build_report(
         f"(dropped {mood_drop} points). "
         f"Risk score: {risk_score}. "
     )
+    if emotion_signals:
+        reasoning += f"Text signals detected: {', '.join(emotion_signals)}. "
     if minimization_detected:
         reasoning += "Text entries suggest emotional minimisation despite declining scores."
 
@@ -168,4 +249,5 @@ def _build_report(
         reasoning=reasoning,
         loops_run=loops_run,
         minimization_detected=minimization_detected,
+        emotion_signals=emotion_signals,
     )
