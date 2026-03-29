@@ -68,8 +68,8 @@ def _generate_silence_message(language: str, days_silent: int) -> tuple[str, str
         client = get_gemini_client()
         prompt_en = _SILENCE_PROMPT.format(days=days_silent, language_name=language_name_en)
         prompt_es = _SILENCE_PROMPT.format(days=days_silent, language_name=language_name_es)
-        msg_en = client.models.generate_content(model="gemini-2.0-flash", contents=prompt_en).text.strip()
-        msg_es = client.models.generate_content(model="gemini-2.0-flash", contents=prompt_es).text.strip()
+        msg_en = client.models.generate_content(model="gemini-1.5-flash", contents=prompt_en).text.strip()
+        msg_es = client.models.generate_content(model="gemini-1.5-flash", contents=prompt_es).text.strip()
         return msg_en, msg_es
     except Exception as exc:
         logger.warning("Gemini unavailable for silence outreach, using fallback: %s", exc)
