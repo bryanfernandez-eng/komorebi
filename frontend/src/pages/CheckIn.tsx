@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import { MoodSlider, SleepSlider, StressSlider } from '../components/Sliders';
 import { submitCheckin } from '../api';
 
@@ -16,6 +16,12 @@ function vibe(mood: number, stress: number): 'clear' | 'mixed' | 'heavy' {
 // Window pane shown above the form — minimal, purposeful
 function WindowPane({ mood, stress }: { mood: number; stress: number }) {
   const state = vibe(mood, stress);
+  const [fogKey, setFogKey] = useState(0);
+
+  // Trigger fog wipe when state changes
+  useEffect(() => {
+    setFogKey(prev => prev + 1);
+  }, [state]);
 
   const skyColors: Record<typeof state, string> = {
     clear:  '#d4e9f7',
@@ -98,6 +104,12 @@ function WindowPane({ mood, stress }: { mood: number; stress: number }) {
           )}
         </>
       )}
+
+      {/* Fog wipe animation (triggers on state change) */}
+      <div
+        key={fogKey}
+        className="absolute inset-0 bg-white/70 blur-md pointer-events-none animate-fog-wipe"
+      />
 
       {/* Window frame — two bars that visually make a 4-pane window */}
       <div className="absolute inset-0 pointer-events-none">
