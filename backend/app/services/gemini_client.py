@@ -29,12 +29,12 @@ async def verify_connection() -> dict:
         return {"status": "unavailable", "reason": "google-genai not installed"}
     client = get_gemini_client()
     response = client.models.generate_content(
-        model="gemini-2.0-flash",
+        model=settings.gemini_model,
         contents="Reply with only the word: connected",
     )
     reply = response.text.strip().lower()
     return {
         "status": "ok" if "connected" in reply else "unexpected_response",
-        "model": "gemini-2.0-flash",
+        "model": settings.gemini_model,
         "response": reply,
     }

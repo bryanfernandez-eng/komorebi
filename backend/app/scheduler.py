@@ -25,6 +25,7 @@ from apscheduler.triggers.cron import CronTrigger
 from app.config.database import SessionLocal
 from app.models.orm import User, Alert
 from app.services.gemini_client import get_gemini_client
+from app.services.digest_service import generate_digest
 from app.config.settings import settings
 
 logger = logging.getLogger("komorebi.scheduler")
@@ -68,8 +69,8 @@ def _generate_silence_message(language: str, days_silent: int) -> tuple[str, str
         client = get_gemini_client()
         prompt_en = _SILENCE_PROMPT.format(days=days_silent, language_name=language_name_en)
         prompt_es = _SILENCE_PROMPT.format(days=days_silent, language_name=language_name_es)
-        msg_en = client.models.generate_content(model="gemini-2.0-flash", contents=prompt_en).text.strip()
-        msg_es = client.models.generate_content(model="gemini-2.0-flash", contents=prompt_es).text.strip()
+        msg_en = client.models.generate_content(model=settings.gemini_model, contents=prompt_en).text.strip()
+        msg_es = client.models.generate_content(model=settings.gemini_model, contents=prompt_es).text.strip()
         return msg_en, msg_es
     except Exception as exc:
         logger.warning("Gemini unavailable for silence outreach, using fallback: %s", exc)
@@ -161,9 +162,28 @@ def silence_detection() -> None:
 def weekly_digest() -> None:
     """
     Sunday 08:00 — generates a personalised weekly reflection for each active user.
-    Full implementation lives in the digest ticket; this stub logs and no-ops.
+    Runs generate_digest() for every user who checked in at least once this week.
     """
-    logger.info("[weekly_digest] Job triggered at %s — digest not yet implemented.", datetime.now().isoformat())
+    logger.info("[weekly_digest] Starting job at %s", datetime.now().isoformat())
+    db = SessionLocal()
+    generated = 0
+
+    try:
+        users = db.query(User).all()
+        for user in users:
+            try:
+                generate_digest(db, user.id)
+                generated += 1
+                logger.info("[weekly_digest] Digest generated for user %d", user.id)
+            except Exception as exc:
+                logger.warning("[weekly_digest] Failed for user %d: %s", user.id, exc)
+
+        logger.info("[weekly_digest] Done — %d digest(s) generated.", generated)
+
+    except Exception as exc:
+        logger.error("[weekly_digest] Job failed: %s", exc, exc_info=True)
+    finally:
+        db.close()
 
 
 # ──────────────────────────────────────────────────────────────────────────────

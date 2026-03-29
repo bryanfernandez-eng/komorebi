@@ -143,7 +143,7 @@ def run_response_agent(
                         language_name="English",
                     )
                     resp_en = client.models.generate_content(
-                        model="gemini-2.0-flash", contents=prompt_en
+                        model=settings.gemini_model, contents=prompt_en
                     )
                     message_en = resp_en.text.strip()
 
@@ -158,7 +158,7 @@ def run_response_agent(
                         language_name="Spanish",
                     )
                     resp_es = client.models.generate_content(
-                        model="gemini-2.0-flash", contents=prompt_es
+                        model=settings.gemini_model, contents=prompt_es
                     )
                     message_es = resp_es.text.strip()
 
@@ -167,7 +167,7 @@ def run_response_agent(
                         label=context_report.label, language_name="English"
                     )
                     resp_en = client.models.generate_content(
-                        model="gemini-2.0-flash", contents=nudge_prompt_en
+                        model=settings.gemini_model, contents=nudge_prompt_en
                     )
                     message_en = resp_en.text.strip()
 
@@ -175,7 +175,7 @@ def run_response_agent(
                         label=context_report.label, language_name="Spanish"
                     )
                     resp_es = client.models.generate_content(
-                        model="gemini-2.0-flash", contents=nudge_prompt_es
+                        model=settings.gemini_model, contents=nudge_prompt_es
                     )
                     message_es = resp_es.text.strip()
 
@@ -186,7 +186,7 @@ def run_response_agent(
                     days=context_report.days_until,
                 )
                 resp_pred = client.models.generate_content(
-                    model="gemini-2.0-flash", contents=pred_prompt
+                    model=settings.gemini_model, contents=pred_prompt
                 )
                 prediction = resp_pred.text.strip()
 

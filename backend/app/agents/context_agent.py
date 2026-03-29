@@ -30,6 +30,7 @@ class ContextReport:
     nearest_event: str
     days_until: int
     stress_multiplier: int
+    stress_weight: float   # raw weight from calendar (0.0–1.0)
     label: str
 
 
@@ -52,6 +53,7 @@ def run_context_agent(current_date: date | None = None) -> ContextReport:
             nearest_event="Unknown",
             days_until=999,
             stress_multiplier=0,
+            stress_weight=0.0,
             label="No academic calendar data available.",
         )
 
@@ -80,29 +82,42 @@ def run_context_agent(current_date: date | None = None) -> ContextReport:
             nearest_event="None upcoming",
             days_until=999,
             stress_multiplier=0,
+            stress_weight=0.0,
             label="No upcoming academic stressors in the calendar.",
         )
 
-    # ── Apply multiplier rules ────────────────────────────────────────────
+    # ── Apply multiplier rules scaled by event stress_weight ─────────────
+    # stress_weight (0.0–1.0) from calendar — e.g. Spring Break = 0.1,
+    # Finals Week = 1.0. Base multiplier is proximity-driven; weight scales it
+    # so low-stress events (Spring Break) don't trigger high multipliers.
     days = int(min_days)
+    weight = float(nearest_event.get("stress_weight", 1.0))
+
     if days <= 2:
-        multiplier = 25
-        proximity = "starts in 2 days" if days > 0 else "is happening now"
+        base = 25
+        if days == 0:
+            proximity = "is happening now"
+        elif days == 1:
+            proximity = "starts tomorrow"
+        else:
+            proximity = "starts in 2 days"
     elif days <= 5:
-        multiplier = 15
+        base = 15
         proximity = f"starts in {days} days"
     elif days <= 7:
-        multiplier = 10
+        base = 10
         proximity = f"starts in {days} days"
     else:
-        multiplier = 0
+        base = 0
         proximity = f"starts in {days} days"
 
+    multiplier = int(base * weight)
     label = f"{nearest_event['event']} {proximity}"
 
     return ContextReport(
         nearest_event=nearest_event["event"],
         days_until=days,
         stress_multiplier=multiplier,
+        stress_weight=weight,
         label=label,
     )
