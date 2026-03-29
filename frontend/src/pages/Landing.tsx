@@ -1,4 +1,4 @@
-import { ArrowRight, Brain, Activity, ShieldCheck, Zap, Users, BarChart2 } from 'lucide-react';
+import { ArrowRight, Brain, Activity, Zap, Users, BarChart2 } from 'lucide-react';
 
 interface LandingProps {
   onEnter: () => void;

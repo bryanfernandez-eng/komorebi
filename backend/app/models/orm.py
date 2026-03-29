@@ -78,6 +78,7 @@ class CounselorFlag(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     dorm_floor = Column(String)
     final_score = Column(Integer)
+    is_resolved = Column(Boolean, default=False)
     flagged_at = Column(DateTime, server_default=func.now())
 
     user = relationship("User", back_populates="counselor_flags")

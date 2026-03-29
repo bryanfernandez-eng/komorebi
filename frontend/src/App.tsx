@@ -4,18 +4,20 @@ import Login, { type Profile } from './pages/Login';
 import CheckIn from './pages/CheckIn';
 import StudentDashboard from './pages/StudentDashboard';
 import CounselorDashboard from './pages/CounselorDashboard';
+import Resources from './pages/Resources';
 
 type AppScreen = 'landing' | 'login' | 'app';
-type Tab = 'checkin' | 'dashboard' | 'admin';
+type Tab = 'checkin' | 'dashboard' | 'resources' | 'admin';
 
 const STUDENT_TABS = [
-  { id: 'checkin' as Tab,   label: 'Daily Check-in',    desc: 'Log your mood, sleep & stress' },
-  { id: 'dashboard' as Tab, label: 'Wellness Insights',  desc: 'AI assessment of your wellbeing' },
+  { id: 'checkin' as Tab, label: 'Daily Check-in', desc: 'Log your mood, sleep & stress' },
+  { id: 'dashboard' as Tab, label: 'Wellness Insights', desc: 'AI assessment of your wellbeing' },
+  { id: 'resources' as Tab, label: 'Resources', desc: 'Campus mental health contacts' },
 ];
 
 export default function App() {
-  const [screen, setScreen]     = useState<AppScreen>('landing');
-  const [profile, setProfile]   = useState<Profile | null>(null);
+  const [screen, setScreen] = useState<AppScreen>('landing');
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>('checkin');
 
   if (screen === 'landing') {
@@ -36,14 +38,16 @@ export default function App() {
   }
 
   const pageTitle =
-    activeTab === 'checkin'   ? 'Daily Check-in' :
-    activeTab === 'dashboard' ? 'Wellness Insights' :
-                                'Counselor Dashboard';
+    activeTab === 'checkin' ? 'Daily Check-in' :
+      activeTab === 'dashboard' ? 'Wellness Insights' :
+        activeTab === 'resources' ? 'Campus Resources' :
+          'Counselor Dashboard';
 
   const pageDesc =
-    activeTab === 'checkin'   ? 'Your responses are analysed by AI agents after each submission.' :
-    activeTab === 'dashboard' ? 'AI agents assess your risk level, campus context, and emotional signals.' :
-                                'Anonymised campus-wide wellness data and AI-flagged students.';
+    activeTab === 'checkin' ? 'Your responses are analysed by AI agents after each submission.' :
+      activeTab === 'dashboard' ? 'AI agents assess your risk level, campus context, and emotional signals.' :
+        activeTab === 'resources' ? 'Crisis hotlines and urgent mental health support at USF.' :
+          'Anonymised campus-wide wellness data and AI-flagged students.';
 
   return (
     <div className="font-sans text-[#594031] min-h-screen bg-[#FBF7EC] flex flex-col">
@@ -52,11 +56,11 @@ export default function App() {
       <header className="border-b border-[#D1CAA9] bg-[#D1CAA9] px-6 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <svg width="18" height="18" viewBox="0 0 22 22" fill="none">
-            <circle cx="11" cy="11" r="3.5" fill="#304E2F" opacity="0.9"/>
-            <line x1="11" y1="2"    x2="11" y2="5.5"  stroke="#304E2F" strokeWidth="1.5" strokeLinecap="round" opacity="0.5"/>
-            <line x1="11" y1="16.5" x2="11" y2="20"   stroke="#304E2F" strokeWidth="1.5" strokeLinecap="round" opacity="0.5"/>
-            <line x1="2"  y1="11"   x2="5.5" y2="11"  stroke="#304E2F" strokeWidth="1.5" strokeLinecap="round" opacity="0.5"/>
-            <line x1="16.5" y1="11" x2="20" y2="11"   stroke="#304E2F" strokeWidth="1.5" strokeLinecap="round" opacity="0.5"/>
+            <circle cx="11" cy="11" r="3.5" fill="#304E2F" opacity="0.9" />
+            <line x1="11" y1="2" x2="11" y2="5.5" stroke="#304E2F" strokeWidth="1.5" strokeLinecap="round" opacity="0.5" />
+            <line x1="11" y1="16.5" x2="11" y2="20" stroke="#304E2F" strokeWidth="1.5" strokeLinecap="round" opacity="0.5" />
+            <line x1="2" y1="11" x2="5.5" y2="11" stroke="#304E2F" strokeWidth="1.5" strokeLinecap="round" opacity="0.5" />
+            <line x1="16.5" y1="11" x2="20" y2="11" stroke="#304E2F" strokeWidth="1.5" strokeLinecap="round" opacity="0.5" />
           </svg>
           <span className="text-[14px] font-semibold text-[#304E2F]">Komorebi</span>
           <span className="text-[#4E6E4C] text-[14px]">/</span>
@@ -114,9 +118,10 @@ export default function App() {
 
       {/* Main content */}
       <main className="flex-1">
-        {activeTab === 'checkin'   && profile.role === 'student'   && <CheckIn userId={profile.id} userName={profile.name} />}
-        {activeTab === 'dashboard' && profile.role === 'student'   && <StudentDashboard userId={profile.id} />}
-        {activeTab === 'admin'     && profile.role === 'counselor' && <CounselorDashboard />}
+        {activeTab === 'checkin' && profile.role === 'student' && <CheckIn userId={profile.id} userName={profile.name} />}
+        {activeTab === 'dashboard' && profile.role === 'student' && <StudentDashboard userId={profile.id} />}
+        {activeTab === 'resources' && profile.role === 'student' && <Resources />}
+        {activeTab === 'admin' && profile.role === 'counselor' && <CounselorDashboard />}
       </main>
 
     </div>

@@ -131,3 +131,34 @@ def get_dashboard_data(db: Session) -> dict:
         "campus_stress_elevated": campus_elevated,
         "percent_high_stress": percent_high,
     }
+
+def get_active_flags(db: Session) -> list[dict]:
+    """Retrieve all unresolved flags joined with their user data."""
+    flags = (
+        db.query(CounselorFlag, User)
+        .join(User, CounselorFlag.user_id == User.id)
+        .filter(CounselorFlag.is_resolved == False)
+        .order_by(CounselorFlag.flagged_at.desc())
+        .all()
+    )
+    result = []
+    for flag, user in flags:
+        result.append({
+            "id": flag.id,
+            "user_id": user.id,
+            "user_name": user.name,
+            "dorm_floor": user.dorm_floor,
+            "final_score": flag.final_score,
+            "flagged_at": flag.flagged_at,
+            "is_resolved": flag.is_resolved,
+        })
+    return result
+
+def resolve_flag(db: Session, flag_id: int) -> bool:
+    """Mark a flag as resolved."""
+    flag = db.query(CounselorFlag).filter(CounselorFlag.id == flag_id).first()
+    if not flag:
+        return False
+    flag.is_resolved = True
+    db.commit()
+    return True

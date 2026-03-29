@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { ShieldAlert, AlertTriangle, Calendar, Activity, Users, ArrowDownRight, Brain, BarChart2, Zap } from 'lucide-react';
-import { getCounselorDashboard } from '../api';
+import { ShieldAlert, AlertTriangle, Calendar, Activity, Users, ArrowDownRight, Brain, BarChart2, Zap, CheckCircle2 } from 'lucide-react';
+import { getCounselorDashboard, getCounselorFlags, resolveCounselorFlag } from '../api';
 
 interface FloorSummary {
   floor: string;
@@ -19,6 +19,16 @@ interface DashboardResponse {
   upcoming_event?: string;
 }
 
+interface FlagResponse {
+  id: number;
+  user_id: number;
+  user_name: string;
+  dorm_floor: string;
+  final_score: number;
+  flagged_at: string;
+  is_resolved: boolean;
+}
+
 function stressStyle(stress: number): { bg: string; border: string; text: string; label: string } {
   if (stress >= 7) return { bg: '#594031', border: '#594031', text: '#FBF7EC', label: 'High' };
   if (stress >= 4) return { bg: '#B69265', border: '#B69265', text: '#FBF7EC', label: 'Moderate' };
@@ -27,13 +37,19 @@ function stressStyle(stress: number): { bg: string; border: string; text: string
 
 export default function CounselorDashboard() {
   const [data,    setData]    = useState<DashboardResponse | null>(null);
+  const [flags,   setFlags]   = useState<FlagResponse[]>([]);
   const [loading, setLoading] = useState(true);
+  const [resolving, setResolving] = useState<number | null>(null);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await getCounselorDashboard();
-        setData(res);
+        const [dashRes, flagsRes] = await Promise.all([
+          getCounselorDashboard(),
+          getCounselorFlags()
+        ]);
+        setData(dashRes);
+        setFlags(flagsRes.flags || []);
       } catch (err) {
         console.error('Failed to fetch counselor data:', err);
       } finally {
@@ -42,6 +58,18 @@ export default function CounselorDashboard() {
     }
     fetchData();
   }, []);
+
+  async function handleResolve(flagId: number) {
+    try {
+      setResolving(flagId);
+      await resolveCounselorFlag(flagId);
+      setFlags(prev => prev.filter(f => f.id !== flagId));
+    } catch (err) {
+      console.error('Failed to resolve flag', err);
+    } finally {
+      setResolving(null);
+    }
+  }
 
   if (loading || !data) {
     return (
@@ -100,6 +128,63 @@ export default function CounselorDashboard() {
                 <p className="text-[11px] text-[#4E6E4C] leading-relaxed">{detail}</p>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* Actionable AI Flags */}
+        <div className="bg-white border border-[#D1CAA9] rounded-2xl overflow-hidden shadow-sm">
+          <div className="px-5 py-3.5 border-b border-[#E8E3D9] flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <ShieldAlert className="w-4 h-4 text-[#594031]" />
+              <span className="text-[14px] font-bold text-[#304E2F]">Students Requiring Action</span>
+            </div>
+            <div className="px-2 py-0.5 rounded-full bg-[#594031] text-[#FBF7EC] text-[11px] font-bold">
+              {flags.length} active
+            </div>
+          </div>
+          
+          <div className="p-5">
+            {flags.length === 0 ? (
+              <div className="py-6 flex flex-col items-center justify-center text-center bg-[#FBF7EC] border border-dashed border-[#D1CAA9] rounded-xl">
+                <CheckCircle2 className="w-6 h-6 text-[#A8C99A] mb-2" />
+                <p className="text-[13px] font-bold text-[#4E6E4C]">All caught up!</p>
+                <p className="text-[12px] text-[#B69265]">No students currently flagged by the Response Agent.</p>
+              </div>
+            ) : (
+              <div className="grid sm:grid-cols-2 gap-4">
+                {flags.map(flag => (
+                  <div key={flag.id} className="p-4 bg-[#FBF7EC] border border-[#D1CAA9] rounded-xl flex flex-col justify-between">
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <div className="text-[15px] font-bold text-[#304E2F]">{flag.user_name}</div>
+                        <div className="text-[12px] font-medium text-[#B69265]">Floor: {flag.dorm_floor || 'Unknown'}</div>
+                      </div>
+                      <div className="px-2.5 py-1 bg-[#594031] text-[#FBF7EC] rounded-lg text-[12px] font-bold text-center">
+                        <div>{flag.final_score}</div>
+                        <div className="text-[9px] uppercase tracking-wider opacity-80">Score</div>
+                      </div>
+                    </div>
+                    
+                    <div className="text-[11px] text-[#4E6E4C] mb-4">
+                      Flagged: {new Date(flag.flagged_at).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
+                    </div>
+                    
+                    <button
+                      onClick={() => handleResolve(flag.id)}
+                      disabled={resolving === flag.id}
+                      className="w-full py-2 bg-[#EAE2D0] hover:bg-[#D1CAA9] text-[#304E2F] rounded-lg text-[12px] font-bold transition-colors disabled:opacity-50 flex justify-center items-center gap-2"
+                    >
+                      {resolving === flag.id ? 'Resolving...' : (
+                         <>
+                           <CheckCircle2 className="w-3.5 h-3.5" />
+                           Mark as Reviewed
+                         </>
+                      )}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 

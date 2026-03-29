@@ -36,3 +36,12 @@ export const getAlerts = (userId: number) =>
 
 export const getCounselorDashboard = () =>
   fetch(`${BASE_URL}/counselor/dashboard`).then(r => r.json());
+
+export const getCounselorFlags = () =>
+  fetch(`${BASE_URL}/counselor/flags`).then(r => r.json());
+
+export const resolveCounselorFlag = (flagId: number) =>
+  fetch(`${BASE_URL}/counselor/flags/${flagId}/resolve`, { method: 'POST' }).then(r => r.json());
+
+export const getUsfResources = () =>
+  fetch(`${BASE_URL}/usf/counseling-hours`).then(r => r.json());

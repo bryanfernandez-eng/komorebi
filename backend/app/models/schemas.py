@@ -87,4 +87,21 @@ class CounselorDashboardResponse(BaseModel):
     floors: list[FloorSummary]
     campus_stress_elevated: bool    # True when >50% of checkins are high-stress
     percent_high_stress: int        # % of students reporting stress >= 7 this week
-    upcoming_event: Optional[str]   # e.g. "Midterm Week in 2 days"
+    upcoming_event: Optional[str] = None
+
+
+class CounselorFlagResponse(BaseModel):
+    """Detailed record of a Counselor Flag returned for actionability."""
+    id: int
+    user_id: int
+    user_name: str
+    dorm_floor: Optional[str] = None
+    final_score: int
+    flagged_at: datetime
+    is_resolved: bool
+
+    model_config = {"from_attributes": True}
+
+
+class CounselorFlagListResponse(BaseModel):
+    flags: list[CounselorFlagResponse]

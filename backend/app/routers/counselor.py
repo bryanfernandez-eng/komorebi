@@ -14,7 +14,12 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.config.database import get_db
-from app.models.schemas import CounselorDashboardResponse, FloorSummary
+from app.models.schemas import (
+    CounselorDashboardResponse, 
+    FloorSummary, 
+    CounselorFlagListResponse, 
+    CounselorFlagResponse
+)
 from app.repositories import counselor_repo
 from app.agents.context_agent import run_context_agent
 
@@ -66,3 +71,24 @@ def get_counselor_dashboard(
         percent_high_stress=data["percent_high_stress"],
         upcoming_event=upcoming_event,
     )
+
+
+@router.get(
+    "/counselor/flags",
+    response_model=CounselorFlagListResponse,
+    summary="List active counselor flags",
+    description="Returns a list of all unresolved flags that need counselor attention.",
+)
+def get_counselor_flags(db: Session = Depends(get_db)):
+    flags_data = counselor_repo.get_active_flags(db)
+    return CounselorFlagListResponse(flags=flags_data)
+
+
+@router.post(
+    "/counselor/flags/{flag_id}/resolve",
+    summary="Resolve a counselor flag",
+    description="Marks a specific flag as resolved by a counselor.",
+)
+def resolve_counselor_flag(flag_id: int, db: Session = Depends(get_db)):
+    success = counselor_repo.resolve_flag(db, flag_id)
+    return {"success": success}
