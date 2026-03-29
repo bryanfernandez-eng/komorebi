@@ -23,15 +23,15 @@ function WindowPane({ mood, stress }: { mood: number; stress: number }) {
   }, [state]);
 
   const skyColors: Record<typeof state, string> = {
-    clear:  '#d4e9f7',
-    mixed:  '#c4c8d4',
-    heavy:  '#8e9099',
+    clear:  '#FBF7EC',
+    mixed:  '#D1CAA9',
+    heavy:  '#594031',
   };
 
   const groundColors: Record<typeof state, string> = {
-    clear: '#b8d4a8',
-    mixed: '#9eaa96',
-    heavy: '#707878',
+    clear: '#A8C99A',
+    mixed: '#4E6E4C',
+    heavy: '#304E2F',
   };
 
   const sunOpacity: Record<typeof state, number> = {
@@ -63,12 +63,12 @@ function WindowPane({ mood, stress }: { mood: number; stress: number }) {
           width: 32,
           height: 32,
           borderRadius: '50%',
-          backgroundColor: '#f5d76e',
+          backgroundColor: '#B69265',
           top: 20,
           right: 32,
           opacity: sunOpacity[state],
           transition: 'opacity 0.8s ease',
-          boxShadow: '0 0 16px 4px rgba(245,215,110,0.35)',
+          boxShadow: '0 0 16px 4px rgba(182,146,101,0.35)',
         }}
       />
 
@@ -80,7 +80,7 @@ function WindowPane({ mood, stress }: { mood: number; stress: number }) {
             style={{
               width: 72, height: 28,
               borderRadius: 99,
-              backgroundColor: state === 'heavy' ? '#b0b4bb' : '#d8dce4',
+              backgroundColor: state === 'heavy' ? '#304E2F' : '#FBF7EC',
               top: 18, left: 28,
               transition: 'background-color 0.8s ease',
             }}
@@ -90,7 +90,7 @@ function WindowPane({ mood, stress }: { mood: number; stress: number }) {
             style={{
               width: 44, height: 20,
               borderRadius: 99,
-              backgroundColor: state === 'heavy' ? '#9fa3aa' : '#cdd2da',
+              backgroundColor: state === 'heavy' ? '#4E6E4C' : '#FBF7EC',
               top: 26, left: 56,
               transition: 'background-color 0.8s ease',
             }}
@@ -98,7 +98,7 @@ function WindowPane({ mood, stress }: { mood: number; stress: number }) {
           {state === 'heavy' && (
             <div
               className="absolute"
-              style={{ width: 88, height: 32, borderRadius: 99, backgroundColor: '#8c9098', top: 12, right: 40 }}
+              style={{ width: 88, height: 32, borderRadius: 99, backgroundColor: '#304E2F', top: 12, right: 40 }}
             />
           )}
         </>
@@ -112,8 +112,8 @@ function WindowPane({ mood, stress }: { mood: number; stress: number }) {
 
       {/* Window frame — two bars that visually make a 4-pane window */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute left-1/2 top-0 bottom-0 w-[2px] bg-[#1a1a1a]/20 -translate-x-1/2" />
-        <div className="absolute top-1/2 left-0 right-0 h-[2px] bg-[#1a1a1a]/20 -translate-y-1/2" />
+        <div className="absolute left-1/2 top-0 bottom-0 w-[2px] bg-[#304E2F]/20 -translate-x-1/2" />
+        <div className="absolute top-1/2 left-0 right-0 h-[2px] bg-[#304E2F]/20 -translate-y-1/2" />
       </div>
     </div>
   );
@@ -162,19 +162,19 @@ export default function CheckIn({ userId, userName }: CheckInProps) {
   }
 
   return (
-    <div className="min-h-screen bg-[#0c0c0c] flex items-center justify-center p-5">
+    <div className="min-h-screen bg-[#FBF7EC] flex items-center justify-center p-5">
       <div className="w-full" style={{ maxWidth: 400 }}>
 
         {/* ── Card ──────────────────────────────────────────────────────── */}
         <div
           className="rounded-2xl overflow-hidden"
-          style={{ backgroundColor: '#161616', border: '1px solid #252525' }}
+          style={{ backgroundColor: '#D1CAA9', border: '1px solid #B69265' }}
         >
           {/* Window pane — top of card */}
           <WindowPane mood={mood} stress={stress} />
 
           {/* Window frame bottom edge */}
-          <div style={{ height: 1, backgroundColor: '#252525' }} />
+          <div style={{ height: 1, backgroundColor: '#B69265' }} />
 
           {/* Form body */}
           <div className="p-6">
@@ -184,33 +184,33 @@ export default function CheckIn({ userId, userName }: CheckInProps) {
                 {/* Checkmark */}
                 <div
                   className="flex items-center justify-center"
-                  style={{ width: 48, height: 48, borderRadius: '50%', backgroundColor: '#1e2e20', border: '1px solid #2e4830' }}
+                  style={{ width: 48, height: 48, borderRadius: '50%', backgroundColor: '#FBF7EC', border: '1px solid #A8C99A' }}
                 >
                   <svg width="20" height="20" fill="none" viewBox="0 0 20 20">
-                    <path d="M4 10l4.5 4.5L16 6" stroke="#7eb88a" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M4 10l4.5 4.5L16 6" stroke="#A8C99A" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                 </div>
 
                 <div className="text-center">
-                  <p className="text-[15px] font-medium text-[#e8e8e8]">Logged</p>
-                  <p className="text-[13px] text-[#555] mt-1">Check-in #{checkinId} saved</p>
+                  <p className="text-[15px] font-medium text-[#304E2F]">Logged</p>
+                  <p className="text-[13px] text-[#4E6E4C] mt-1">Check-in #{checkinId} saved</p>
                 </div>
 
                 <div
                   className="flex gap-5 mt-1"
-                  style={{ padding: '10px 20px', borderRadius: 10, backgroundColor: '#111', border: '1px solid #1e1e1e' }}
+                  style={{ padding: '10px 20px', borderRadius: 10, backgroundColor: '#FBF7EC', border: '1px solid #B69265' }}
                 >
                   {[['Mood', mood], ['Sleep', sleep], ['Stress', stress]].map(([k, v]) => (
                     <div key={String(k)} className="flex flex-col items-center gap-0.5">
-                      <span className="text-[11px] text-[#444] uppercase tracking-wider">{k}</span>
-                      <span className="text-[15px] font-medium text-[#ccc]">{v}<span className="text-[11px] text-[#555]">/10</span></span>
+                      <span className="text-[11px] text-[#594031] uppercase tracking-wider">{k}</span>
+                      <span className="text-[15px] font-medium text-[#304E2F]">{v}<span className="text-[11px] text-[#4E6E4C]">/10</span></span>
                     </div>
                   ))}
                 </div>
 
                 <button
                   onClick={handleReset}
-                  className="mt-1 text-[13px] text-[#555] hover:text-[#888] transition-colors"
+                  className="mt-1 text-[13px] text-[#594031] hover:text-[#B69265] transition-colors"
                 >
                   Check in again
                 </button>
@@ -222,8 +222,8 @@ export default function CheckIn({ userId, userName }: CheckInProps) {
 
                 {/* Header */}
                 <div className="mb-6">
-                  <h1 className="text-[15px] font-semibold text-[#e0e0e0]">How are you doing, {userName}?</h1>
-                  <p className="text-[13px] text-[#666] mt-1 leading-relaxed">
+                  <h1 className="text-[15px] font-semibold text-[#304E2F]">How are you doing, {userName}?</h1>
+                  <p className="text-[13px] text-[#4E6E4C] mt-1 leading-relaxed">
                     Takes 30 seconds. After you submit, AI agents will analyze your responses and update your wellness insights.
                   </p>
                 </div>
@@ -236,16 +236,16 @@ export default function CheckIn({ userId, userName }: CheckInProps) {
                 </div>
 
                 {/* Divider */}
-                <div style={{ height: 1, backgroundColor: '#1e1e1e', margin: '24px 0' }} />
+                <div style={{ height: 1, backgroundColor: '#B69265', margin: '24px 0' }} />
 
                 {/* Text entry */}
                 <div>
                   <label
                     htmlFor="text-entry"
-                    className="block text-[11px] font-semibold tracking-[0.08em] uppercase text-[#555] mb-2"
+                    className="block text-[11px] font-semibold tracking-[0.08em] uppercase text-[#4E6E4C] mb-2"
                   >
                     Anything on your mind?{' '}
-                    <span className="font-normal normal-case text-[#3a3a3a]">optional</span>
+                    <span className="font-normal normal-case text-[#594031]">optional</span>
                   </label>
                   <textarea
                     id="text-entry"
@@ -256,22 +256,22 @@ export default function CheckIn({ userId, userName }: CheckInProps) {
                     placeholder="Today has been..."
                     style={{
                       width: '100%',
-                      backgroundColor: '#111',
-                      border: '1px solid #1e1e1e',
+                      backgroundColor: '#FBF7EC',
+                      border: '1px solid #B69265',
                       borderRadius: 10,
                       padding: '10px 12px',
                       fontSize: 13,
-                      color: '#ccc',
+                      color: '#594031',
                       resize: 'none',
                       outline: 'none',
                       lineHeight: '1.5',
                       boxSizing: 'border-box',
                     }}
-                    onFocus={e => { e.currentTarget.style.borderColor = '#333'; }}
-                    onBlur={e => { e.currentTarget.style.borderColor = '#1e1e1e'; }}
+                    onFocus={e => { e.currentTarget.style.borderColor = '#4E6E4C'; }}
+                    onBlur={e => { e.currentTarget.style.borderColor = '#B69265'; }}
                   />
                   <div className="flex justify-end mt-1">
-                    <span className="text-[11px] text-[#333]">{text.length} / 1000</span>
+                    <span className="text-[11px] text-[#4E6E4C]">{text.length} / 1000</span>
                   </div>
                 </div>
 
@@ -279,7 +279,7 @@ export default function CheckIn({ userId, userName }: CheckInProps) {
                 {state === 'error' && (
                   <div
                     className="mt-4 text-[13px]"
-                    style={{ padding: '10px 12px', borderRadius: 8, backgroundColor: '#1e1212', border: '1px solid #3a1f1f', color: '#b87070' }}
+                    style={{ padding: '10px 12px', borderRadius: 8, backgroundColor: '#FBF7EC', border: '1px solid #B69265', color: '#B69265' }}
                   >
                     {error}
                   </div>
@@ -293,9 +293,9 @@ export default function CheckIn({ userId, userName }: CheckInProps) {
                   style={{
                     padding: '11px 0',
                     borderRadius: 10,
-                    backgroundColor: state === 'submitting' ? '#161616' : '#7eb88a',
-                    color: state === 'submitting' ? '#444' : '#0c1a0e',
-                    border: `1px solid ${state === 'submitting' ? '#222' : '#6aa876'}`,
+                    backgroundColor: state === 'submitting' ? '#D1CAA9' : '#A8C99A',
+                    color: state === 'submitting' ? '#4E6E4C' : '#304E2F',
+                    border: `1px solid ${state === 'submitting' ? '#B69265' : '#4E6E4C'}`,
                     cursor: state === 'submitting' ? 'not-allowed' : 'pointer',
                     letterSpacing: '0.01em',
                   }}
@@ -317,7 +317,7 @@ export default function CheckIn({ userId, userName }: CheckInProps) {
         </div>
 
         {/* Footer */}
-        <p className="text-center text-[11px] mt-4" style={{ color: '#2e2e2e' }}>
+        <p className="text-center text-[11px] mt-4 font-semibold" style={{ color: '#B69265' }}>
           Komorebi · Your data is private
         </p>
       </div>

@@ -30,7 +30,7 @@ function Slider({
     <div className="space-y-3">
       {/* Label row */}
       <div className="flex items-center justify-between">
-        <label htmlFor={id} className="text-[11px] font-semibold tracking-[0.08em] uppercase text-[#666]">
+        <label htmlFor={id} className="text-[11px] font-semibold tracking-[0.08em] uppercase text-[#4E6E4C]">
           {label}
         </label>
         <span className="text-sm" aria-label={`${value} out of 10`}>
@@ -39,7 +39,7 @@ function Slider({
       </div>
 
       {/* Track */}
-      <div className="relative h-[3px] rounded-full bg-[#222] cursor-pointer">
+      <div className="relative h-[3px] rounded-full bg-[#D1CAA9] cursor-pointer">
         {/* Fill */}
         <div
           className="absolute inset-y-0 left-0 rounded-full transition-[width] duration-75"
@@ -50,7 +50,7 @@ function Slider({
           className="absolute top-1/2 -translate-y-1/2 w-[18px] h-[18px] rounded-full border-2 transition-[left] duration-75"
           style={{
             left: `calc(${pct}% - 9px)`,
-            backgroundColor: '#0c0c0c',
+            backgroundColor: '#FBF7EC',
             borderColor: accentColor,
           }}
         />
@@ -68,9 +68,9 @@ function Slider({
       </div>
 
       {/* Min / value / max row */}
-      <div className="flex items-center justify-between text-[11px] text-[#444]">
+      <div className="flex items-center justify-between text-[11px] text-[#4E6E4C]">
         <span>{lowLabel}</span>
-        <span className="font-medium text-[#555]">{value} / 10</span>
+        <span className="font-medium text-[#594031]">{value} / 10</span>
         <span>{highLabel}</span>
       </div>
     </div>
@@ -88,7 +88,7 @@ export function MoodSlider({ value, onChange }: { value: number; onChange: (v: n
       lowLabel="Really low"
       highLabel="Amazing"
       steps={MOOD_STEPS}
-      accentColor="#7eb88a"
+      accentColor="#A8C99A"
     />
   );
 }
@@ -103,17 +103,17 @@ export function SleepSlider({ value, onChange }: { value: number; onChange: (v: 
       lowLabel="Barely slept"
       highLabel="Slept great"
       steps={SLEEP_STEPS}
-      accentColor="#7eb88a"
+      accentColor="#A8C99A"
     />
   );
 }
 
 export function StressSlider({ value, onChange }: { value: number; onChange: (v: number) => void }) {
-  // Stress accent shifts from calm (green) → tense (amber) → overwhelmed (red)
+  // Stress accent shifts from calm (green) → tense (brown) → overwhelmed (dark brown)
   const stressColor =
-    value <= 3 ? '#7eb88a' :
-    value <= 6 ? '#c9955a' :
-                 '#c06060';
+    value <= 3 ? '#A8C99A' :
+    value <= 6 ? '#B69265' :
+                 '#594031';
 
   return (
     <Slider
