@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config.database import engine, Base
 import app.models.orm  # noqa: F401 — registers all ORM models with Base
-from app.routers import checkin, assess, alerts
+from app.routers import checkin, assess, alerts, counselor
 
 
 @asynccontextmanager
@@ -33,6 +33,7 @@ app.add_middleware(
 app.include_router(checkin.router)
 app.include_router(assess.router)
 app.include_router(alerts.router)
+app.include_router(counselor.router)
 
 
 # ── Health ────────────────────────────────────────────────────────────────────

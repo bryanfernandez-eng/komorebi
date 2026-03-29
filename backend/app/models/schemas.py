@@ -66,3 +66,24 @@ class AlertsResponse(BaseModel):
     """Response for GET /alerts/{user_id}"""
     user_id: int
     alerts: list[AlertRecord]
+
+
+# ── Counselor Dashboard ───────────────────────────────────────────────────────
+
+class FloorSummary(BaseModel):
+    """Anonymised wellness summary for a single dorm floor."""
+    floor: str
+    avg_stress: float           # campus stress avg for this floor
+    avg_mood: float             # campus mood avg for this floor
+    student_count: int          # number of students who checked in this week
+    flagged_count: int          # number of students flagged by agents
+    spike_detected: bool        # True if this week's stress jumped significantly
+    spike_delta: float          # how many points stress moved vs last week (negative = worse)
+
+
+class CounselorDashboardResponse(BaseModel):
+    """Response for GET /counselor/dashboard"""
+    floors: list[FloorSummary]
+    campus_stress_elevated: bool    # True when >50% of checkins are high-stress
+    percent_high_stress: int        # % of students reporting stress >= 7 this week
+    upcoming_event: Optional[str]   # e.g. "Midterm Week in 2 days"
