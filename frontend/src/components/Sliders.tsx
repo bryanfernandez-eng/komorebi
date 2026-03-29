@@ -1,10 +1,5 @@
-// Sliders.tsx — clean, minimal, no decoration for its own sake
+// Sliders.tsx — professional, no emoji decorations
 
-const MOOD_STEPS  = ['😞','😟','😕','😐','🙂','😊','😄','😁','🤩','✨'];
-const SLEEP_STEPS = ['💀','😵','🥱','😴','😪','🛌','😌','😏','💪','🌟'];
-const STRESS_STEPS = ['🧘','😌','😐','🤔','😬','😰','😱','🤯','🔥','💥'];
-
-// Single, shared slider primitive
 function Slider({
   id,
   label,
@@ -12,8 +7,8 @@ function Slider({
   onChange,
   lowLabel,
   highLabel,
-  steps,
   accentColor,
+  valueLabel,
 }: {
   id: string;
   label: string;
@@ -21,31 +16,27 @@ function Slider({
   onChange: (v: number) => void;
   lowLabel: string;
   highLabel: string;
-  steps: string[];
   accentColor: string;
+  valueLabel: string;
 }) {
   const pct = ((value - 1) / 9) * 100;
 
   return (
     <div className="space-y-3">
-      {/* Label row */}
       <div className="flex items-center justify-between">
         <label htmlFor={id} className="text-[11px] font-semibold tracking-[0.08em] uppercase text-[#4E6E4C]">
           {label}
         </label>
-        <span className="text-sm" aria-label={`${value} out of 10`}>
-          {steps[value - 1]}
+        <span className="text-[11px] font-semibold text-[#594031] bg-[#FBF7EC] border border-[#D1CAA9] px-2 py-0.5 rounded-md">
+          {valueLabel}
         </span>
       </div>
 
-      {/* Track */}
       <div className="relative h-[3px] rounded-full bg-[#D1CAA9] cursor-pointer">
-        {/* Fill */}
         <div
           className="absolute inset-y-0 left-0 rounded-full transition-[width] duration-75"
           style={{ width: `${pct}%`, backgroundColor: accentColor }}
         />
-        {/* Thumb */}
         <div
           className="absolute top-1/2 -translate-y-1/2 w-[18px] h-[18px] rounded-full border-2 transition-[left] duration-75"
           style={{
@@ -54,7 +45,6 @@ function Slider({
             borderColor: accentColor,
           }}
         />
-        {/* Native input (invisible, handles all interaction) */}
         <input
           id={id}
           type="range"
@@ -67,7 +57,6 @@ function Slider({
         />
       </div>
 
-      {/* Min / value / max row */}
       <div className="flex items-center justify-between text-[11px] text-[#4E6E4C]">
         <span>{lowLabel}</span>
         <span className="font-medium text-[#594031]">{value} / 10</span>
@@ -77,7 +66,10 @@ function Slider({
   );
 }
 
-// Public exports — thin wrappers with preset configs
+const MOOD_LABELS = ['Very low', 'Low', 'Below average', 'Slightly low', 'Neutral', 'Good', 'Pretty good', 'Great', 'Excellent', 'Amazing'];
+const SLEEP_LABELS = ['No sleep', 'Very poor', 'Poor', 'Broken', 'Below avg', 'Okay', 'Good', 'Very good', 'Great', 'Excellent'];
+const STRESS_LABELS = ['Very calm', 'Calm', 'Relaxed', 'Mild', 'Moderate', 'Elevated', 'High', 'Very high', 'Intense', 'Overwhelmed'];
+
 export function MoodSlider({ value, onChange }: { value: number; onChange: (v: number) => void }) {
   return (
     <Slider
@@ -85,10 +77,10 @@ export function MoodSlider({ value, onChange }: { value: number; onChange: (v: n
       label="Mood"
       value={value}
       onChange={onChange}
-      lowLabel="Really low"
+      lowLabel="Very low"
       highLabel="Amazing"
-      steps={MOOD_STEPS}
       accentColor="#A8C99A"
+      valueLabel={MOOD_LABELS[value - 1]}
     />
   );
 }
@@ -102,14 +94,13 @@ export function SleepSlider({ value, onChange }: { value: number; onChange: (v: 
       onChange={onChange}
       lowLabel="Barely slept"
       highLabel="Slept great"
-      steps={SLEEP_STEPS}
       accentColor="#A8C99A"
+      valueLabel={SLEEP_LABELS[value - 1]}
     />
   );
 }
 
 export function StressSlider({ value, onChange }: { value: number; onChange: (v: number) => void }) {
-  // Stress accent shifts from calm (green) → tense (brown) → overwhelmed (dark brown)
   const stressColor =
     value <= 3 ? '#A8C99A' :
     value <= 6 ? '#B69265' :
@@ -123,8 +114,8 @@ export function StressSlider({ value, onChange }: { value: number; onChange: (v:
       onChange={onChange}
       lowLabel="Very calm"
       highLabel="Overwhelmed"
-      steps={STRESS_STEPS}
       accentColor={stressColor}
+      valueLabel={STRESS_LABELS[value - 1]}
     />
   );
 }
