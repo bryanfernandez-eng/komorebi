@@ -44,6 +44,7 @@ export default function App() {
     activeTab === 'checkin'   ? 'Your responses are analysed by AI agents after each submission.' :
     activeTab === 'dashboard' ? 'AI agents assess your risk level, campus context, and emotional signals.' :
                                 'Anonymised campus-wide wellness data and AI-flagged students.';
+  const isStudent = profile.role === 'student';
 
   return (
     <div className="font-sans text-[#594031] min-h-screen bg-[#FBF7EC] flex flex-col">
@@ -59,8 +60,9 @@ export default function App() {
             <line x1="16.5" y1="11" x2="20" y2="11"   stroke="#304E2F" strokeWidth="1.5" strokeLinecap="round" opacity="0.5"/>
           </svg>
           <span className="text-[14px] font-semibold text-[#304E2F]">Komorebi</span>
-          <span className="text-[#4E6E4C] text-[14px]">/</span>
-          <span className="text-[14px] text-[#4E6E4C]">{pageTitle}</span>
+          <span className="hidden sm:inline text-[12px] text-[#4E6E4C]">
+            {isStudent ? 'Student workspace' : 'Counselor view'}
+          </span>
         </div>
 
         <div className="flex items-center gap-3">
@@ -88,28 +90,38 @@ export default function App() {
       </header>
 
       {/* Page header */}
-      <div className="border-b border-[#D1CAA9] bg-[#FBF7EC] px-6 py-5">
-        <h1 className="text-[20px] font-bold text-[#304E2F] mb-0.5">{pageTitle}</h1>
-        <p className="text-[13px] text-[#4E6E4C]">{pageDesc}</p>
+      <div className="border-b border-[#D1CAA9] bg-[#FBF7EC] px-6 py-4">
+        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+          <div className="min-w-0">
+            <div className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#B69265]">
+              {isStudent ? 'Student flow' : 'Operations'}
+            </div>
+            <h1 className="text-[18px] sm:text-[20px] font-bold text-[#304E2F] leading-tight mt-0.5">
+              {pageTitle}
+            </h1>
+            <p className="text-[12px] text-[#4E6E4C] mt-1 max-w-2xl">{pageDesc}</p>
+          </div>
 
-        {profile.role === 'student' && (
-          <div className="flex gap-1 mt-4">
+          {isStudent && (
+            <div className="inline-flex w-fit flex-wrap gap-1 rounded-xl border border-[#D1CAA9] bg-[#F7F2E8] p-1">
             {STUDENT_TABS.map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] transition-all"
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-[12px] font-medium transition-all"
                 style={{
                   backgroundColor: activeTab === tab.id ? '#A8C99A' : 'transparent',
                   color: activeTab === tab.id ? '#304E2F' : '#4E6E4C',
                   border: `1px solid ${activeTab === tab.id ? '#4E6E4C' : 'transparent'}`,
+                  boxShadow: activeTab === tab.id ? '0 1px 0 rgba(48, 78, 47, 0.08)' : 'none',
                 }}
               >
-                <span className="font-medium">{tab.label}</span>
+                <span>{tab.label}</span>
               </button>
             ))}
-          </div>
-        )}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Main content */}

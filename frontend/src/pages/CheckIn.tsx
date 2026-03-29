@@ -47,7 +47,7 @@ export default function CheckIn({ userId, userName }: CheckInProps) {
   }
 
   return (
-    <div className="min-h-[calc(100vh-120px)] bg-[#FBF7EC] flex items-start justify-center p-6 pt-10">
+    <div className="min-h-[calc(100vh-120px)] bg-[#FBF7EC] flex items-start justify-center p-6 pt-6">
       <div className="w-full max-w-md">
 
         <div className="bg-white border border-[#D1CAA9] rounded-2xl overflow-hidden shadow-sm">
