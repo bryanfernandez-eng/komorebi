@@ -7,13 +7,18 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config.database import engine, Base
 import app.models.orm  # noqa: F401 — registers all ORM models with Base
 from app.routers import checkin, assess, alerts, counselor
+from app import scheduler as job_scheduler
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Create all tables on startup (idempotent)
     Base.metadata.create_all(bind=engine)
+    # Start background cron jobs
+    job_scheduler.start()
     yield
+    # Graceful shutdown
+    job_scheduler.stop()
 
 
 app = FastAPI(title="Komorebi API", version="1.0.0", lifespan=lifespan)
