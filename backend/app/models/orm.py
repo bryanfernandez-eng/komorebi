@@ -56,6 +56,7 @@ class Alert(Base):
     message_en = Column(Text)
     message_es = Column(Text)
     prediction = Column(Text)
+    trend_context = Column(Text)
     counselor_flagged = Column(Boolean, default=False)
     minimization_detected = Column(Boolean, default=False)
     created_at = Column(DateTime, server_default=func.now())

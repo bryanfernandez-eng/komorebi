@@ -1,4 +1,4 @@
-import { useState, useEffect, type FormEvent } from 'react';
+import { useState, useEffect } from 'react';
 import { MoodSlider, SleepSlider, StressSlider } from '../components/Sliders';
 import { submitCheckin, runAssessment } from '../api';
 
@@ -133,7 +133,7 @@ export default function CheckIn({ userId, userName }: CheckInProps) {
   const [checkinId, setCheckinId] = useState<number | null>(null);
   const [error,  setError]  = useState('');
 
-  async function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setState('submitting');
     setError('');
@@ -223,7 +223,9 @@ export default function CheckIn({ userId, userName }: CheckInProps) {
                 {/* Header */}
                 <div className="mb-6">
                   <h1 className="text-[15px] font-semibold text-[#e0e0e0]">How are you doing, {userName}?</h1>
-                  <p className="text-[13px] text-[#555] mt-0.5">Takes about a minute.</p>
+                  <p className="text-[13px] text-[#666] mt-1 leading-relaxed">
+                    Takes 30 seconds. After you submit, AI agents will analyze your responses and update your wellness insights.
+                  </p>
                 </div>
 
                 {/* Sliders */}

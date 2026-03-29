@@ -47,6 +47,7 @@ def get_alerts(
             message_en=row.message_en,
             message_es=row.message_es,
             prediction=row.prediction,
+            trend_context=row.trend_context,
             counselor_flagged=bool(row.counselor_flagged),
             minimization_detected=bool(row.minimization_detected),
             created_at=row.created_at,

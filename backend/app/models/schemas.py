@@ -55,6 +55,7 @@ class AlertRecord(BaseModel):
     message_en: Optional[str] = None
     message_es: Optional[str] = None
     prediction: Optional[str] = None
+    trend_context: Optional[str] = None
     counselor_flagged: bool
     minimization_detected: bool
     created_at: datetime

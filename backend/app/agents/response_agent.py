@@ -213,6 +213,7 @@ def run_response_agent(
         message_en=message_en,
         message_es=message_es,
         prediction=prediction,
+        trend_context=trend_context_str or None,
         counselor_flagged=counselor_flagged,
         minimization_detected=risk_report.minimization_detected,
     )
