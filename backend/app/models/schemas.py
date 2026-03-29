@@ -43,6 +43,19 @@ class HistoryResponse(BaseModel):
     checkins: list[CheckinRecord]
 
 
+# ── User Profile ──────────────────────────────────────────────────────────────
+
+class UserProfileResponse(BaseModel):
+    """Response for GET /profile/{user_id}"""
+    user_id: int
+    name: str
+    dorm_floor: Optional[str] = None
+    streak: int                  # consecutive_checkin_days
+    language: str
+
+    model_config = {"from_attributes": True}
+
+
 # ── Alerts ────────────────────────────────────────────────────────────────────
 
 class AlertRecord(BaseModel):

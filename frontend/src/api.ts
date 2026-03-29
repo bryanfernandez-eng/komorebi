@@ -45,3 +45,12 @@ export const resolveCounselorFlag = (flagId: number) =>
 
 export const getUsfResources = () =>
   fetch(`${BASE_URL}/usf/counseling-hours`).then(r => r.json());
+
+export const getUserProfile = (userId: number) =>
+  fetch(`${BASE_URL}/profile/${userId}`).then(r => r.json());
+
+export const getDigest = (userId: number) =>
+  fetch(`${BASE_URL}/digest/${userId}`).then(r => r.json());
+
+export const triggerSilenceDetection = () =>
+  fetch(`${BASE_URL}/admin/trigger-silence`, { method: 'POST' }).then(r => r.json());

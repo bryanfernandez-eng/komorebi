@@ -7,8 +7,9 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.config.database import get_db
-from app.models.schemas import CheckinCreate, CheckinResponse, HistoryResponse, CheckinRecord
+from app.models.schemas import CheckinCreate, CheckinResponse, HistoryResponse, CheckinRecord, UserProfileResponse
 from app.repositories import checkin_repo
+from app.models.orm import User
 
 router = APIRouter(tags=["Check-In"])
 
@@ -84,3 +85,32 @@ def get_history(
     ]
 
     return HistoryResponse(user_id=user_id, checkins=checkins)
+
+
+# ───────────────────────────────────────────────────────────────────────
+# GET /profile/{user_id}
+# ───────────────────────────────────────────────────────────────────────
+
+@router.get(
+    "/profile/{user_id}",
+    response_model=UserProfileResponse,
+    summary="Get user profile and streak",
+    description="Returns the user's name, dorm floor, language preference, and consecutive check-in streak.",
+)
+def get_profile(
+    user_id: int,
+    db: Session = Depends(get_db),
+):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"User {user_id} not found.",
+        )
+    return UserProfileResponse(
+        user_id=user.id,
+        name=user.name,
+        dorm_floor=user.dorm_floor,
+        streak=user.consecutive_checkin_days or 0,
+        language=user.language or "en",
+    )

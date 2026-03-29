@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { ShieldAlert, AlertTriangle, Calendar, Activity, Users, ArrowDownRight, Brain, BarChart2, Zap, CheckCircle2 } from 'lucide-react';
-import { getCounselorDashboard, getCounselorFlags, resolveCounselorFlag } from '../api';
+import { ShieldAlert, AlertTriangle, Calendar, Activity, Users, ArrowDownRight, Brain, BarChart2, Zap, CheckCircle2, BellOff } from 'lucide-react';
+import { getCounselorDashboard, getCounselorFlags, resolveCounselorFlag, triggerSilenceDetection } from '../api';
 
 interface FloorSummary {
   floor: string;
@@ -40,6 +40,8 @@ export default function CounselorDashboard() {
   const [flags,   setFlags]   = useState<FlagResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [resolving, setResolving] = useState<number | null>(null);
+  const [silenceFiring, setSilenceFiring] = useState(false);
+  const [silenceResult, setSilenceResult] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchData() {
@@ -68,6 +70,19 @@ export default function CounselorDashboard() {
       console.error('Failed to resolve flag', err);
     } finally {
       setResolving(null);
+    }
+  }
+
+  async function handleSilenceTrigger() {
+    try {
+      setSilenceFiring(true);
+      setSilenceResult(null);
+      await triggerSilenceDetection();
+      setSilenceResult('Silence detection ran successfully. Check server logs for details.');
+    } catch (err) {
+      setSilenceResult('Failed to trigger job. Is the backend running?');
+    } finally {
+      setSilenceFiring(false);
     }
   }
 
@@ -327,6 +342,39 @@ export default function CounselorDashboard() {
 
           </div>
         </div>
+
+        {/* ── Admin Tools ──────────────────────────────────────────────────── */}
+        <div className="bg-white border border-[#D1CAA9] rounded-2xl overflow-hidden shadow-sm">
+          <div className="px-5 py-3.5 border-b border-[#E8E3D9] flex items-center gap-2">
+            <BellOff className="w-3.5 h-3.5 text-[#B69265]" />
+            <span className="text-[13px] font-bold text-[#304E2F]">Admin Tools</span>
+          </div>
+          <div className="p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <div className="flex-1">
+              <div className="text-[13px] font-semibold text-[#304E2F] mb-1">Trigger Silence Detection</div>
+              <p className="text-[12px] text-[#4E6E4C] leading-relaxed">
+                Manually run the nightly silence job now. Finds all students who haven't checked in for 2+ days
+                and queues a Gemini-written outreach message.
+              </p>
+              {silenceResult && (
+                <p className="mt-2 text-[11px] font-semibold text-[#4E6E4C]">{silenceResult}</p>
+              )}
+            </div>
+            <button
+              onClick={handleSilenceTrigger}
+              disabled={silenceFiring}
+              className="flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl text-[13px] font-bold transition-all disabled:opacity-50"
+              style={{
+                backgroundColor: silenceFiring ? '#D1CAA9' : '#304E2F',
+                color: silenceFiring ? '#4E6E4C' : '#FBF7EC',
+              }}
+            >
+              <BellOff className="w-3.5 h-3.5" />
+              {silenceFiring ? 'Running...' : 'Run now'}
+            </button>
+          </div>
+        </div>
+
       </div>
     </div>
   );
